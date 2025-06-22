@@ -9,7 +9,7 @@ const SummaryCards = () => {
       useEffect(() => {
         const saved = JSON.parse(localStorage.getItem('trades')) || [];
         setTrades(saved);
-      }, []);
+      }, [setTrades]);
 
   const totalPnL = trades.reduce((sum, t) => {
     const buy = parseFloat(t.buyPrice || 0) * parseFloat(t.quantity || 0);

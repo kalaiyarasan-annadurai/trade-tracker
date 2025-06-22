@@ -27,7 +27,7 @@ const TradeList = () => {
   useEffect(() => {
     const saved = JSON.parse(localStorage.getItem('trades')) || [];
     setTrades(saved);
-  }, []);
+  }, [setTrades]);
   const rows = trades.map((trade, index) => ({
     id: index + 1,
     ...trade
