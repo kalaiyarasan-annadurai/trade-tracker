@@ -6,17 +6,25 @@ import {
   Grid,
   Typography,
   Alert,
+  MenuItem,
+  Paper,
 } from '@mui/material';
 
 const TradeForm = () => {
   const [form, setForm] = useState({
-    slNo: '',
     buyDate: '',
+    buySession: '',
     stockName: '',
     quantity: '',
     buyPrice: '',
     sellPrice: '',
     sellDate: '',
+    sellingSession: '',
+    segment: '',
+    tradeType: '',
+    entryCondition: '',
+    exitCondition: '',
+    brokrageAndTax: '',
     openingBalance: '',
     closingBalance: '',
     payIn: '',
@@ -29,13 +37,10 @@ const TradeForm = () => {
   const [errors, setErrors] = useState({});
   const [submitted, setSubmitted] = useState(false);
 
-  // Auto-calculate profit
   useEffect(() => {
     const { buyPrice, sellPrice, quantity } = form;
     if (buyPrice && sellPrice && quantity) {
-      const profit =
-        (parseFloat(sellPrice) - parseFloat(buyPrice)) *
-        parseFloat(quantity);
+      const profit = (parseFloat(sellPrice) - parseFloat(buyPrice)) * parseFloat(quantity);
       setForm(prev => ({ ...prev, profit: profit.toFixed(2) }));
     } else {
       setForm(prev => ({ ...prev, profit: '' }));
@@ -48,27 +53,16 @@ const TradeForm = () => {
     setForm(prev => ({ ...prev, [name]: value }));
   };
 
-  const  validate = () => {
+  const validate = () => {
     const newErrors = {};
 
-    // Required text
-    ['slNo', 'stockName'].forEach(field => {
+    ['stockName'].forEach(field => {
       if (!form[field]?.trim()) {
         newErrors[field] = 'Required';
       }
     });
 
-    // Required numbers
-    [
-      'quantity',
-      'buyPrice',
-      'sellPrice',
-      'openingBalance',
-      'closingBalance',
-      'payIn',
-      'payOut',
-      'commission',
-    ].forEach(field => {
+    ['quantity', 'buyPrice'].forEach(field => {
       if (!form[field]) {
         newErrors[field] = 'Required';
       } else if (isNaN(Number(form[field]))) {
@@ -76,8 +70,7 @@ const TradeForm = () => {
       }
     });
 
-    // Required dates
-    ['buyDate', 'sellDate'].forEach(field => {
+    ['buyDate'].forEach(field => {
       if (!form[field]) {
         newErrors[field] = 'Required';
       }
@@ -97,13 +90,19 @@ const TradeForm = () => {
       localStorage.setItem('trades', JSON.stringify(updatedTrades));
       setSubmitted(true);
       setForm({
-        slNo: '',
         buyDate: '',
+        buySession: '',
         stockName: '',
         quantity: '',
         buyPrice: '',
         sellPrice: '',
         sellDate: '',
+        sellingSession: '',
+        segment: '',
+        tradeType: '',
+        entryCondition: '',
+        exitCondition: '',
+        brokrageAndTax: '',
         openingBalance: '',
         closingBalance: '',
         payIn: '',
@@ -116,20 +115,29 @@ const TradeForm = () => {
     }
   };
 
-  const fields = [
-    'slNo', 'buyDate', 'stockName', 'quantity',
-    'buyPrice', 'sellPrice', 'sellDate', 'openingBalance',
-    'closingBalance', 'payIn', 'payOut', 'commission', 'remarks'
-  ];
+  const dropdownOptions = {
+    buySession: ['Morning', 'Mid', 'Afternoon'],
+    sellingSession: ['Morning', 'Mid', 'Afternoon'],
+    segment: ['Equity', 'Future', 'Option', 'Commodity', 'Currency'],
+    tradeType: ['Intra-day', 'Investment', 'Swing', 'Scalping'],
+    entryCondition: ['Accurate Entry', 'Early Entry', 'Entry Without Condition', 'Random', 'Good', 'Late Entry', 'Revenge'],
+    exitCondition: ['Accurate Exit', 'Early Exit', 'Exit in Fear', 'Target Hit', 'SL Hit'],
+  };
 
   const labelMap = {
-    slNo: 'Sl. No',
     buyDate: 'Buy Date',
+    buySession: 'Buy Session',
     stockName: 'Stock Name',
     quantity: 'Quantity',
     buyPrice: 'Buying Price',
     sellPrice: 'Selling Price',
     sellDate: 'Selling Date',
+    sellingSession: 'Selling Session',
+    segment: 'Segment',
+    tradeType: 'Trade Type',
+    entryCondition: 'Entry Condition',
+    exitCondition: 'Exit Condition',
+    brokrageAndTax: 'Brokerage & Tax',
     openingBalance: 'Opening Balance',
     closingBalance: 'Closing Balance',
     payIn: 'Pay-in',
@@ -138,43 +146,78 @@ const TradeForm = () => {
     remarks: 'Remarks',
   };
 
+  const fieldSections = {
+    'Buy Details': ['stockName', 'quantity', 'buyDate', 'buySession', 'segment', 'tradeType', 'entryCondition', 'buyPrice'],
+    'Sell Details': ['sellPrice', 'sellDate', 'sellingSession', 'exitCondition', 'brokrageAndTax'],
+    'Additional Details': ['openingBalance', 'closingBalance', 'payIn', 'payOut', 'commission', 'remarks'],
+  };
+
   return (
-    <Container maxWidth="md">
+    <Container maxWidth="md" sx={{ backgroundColor: '#f9f9f9', padding: 4, borderRadius: 2 }}>
       <Typography variant="h5" gutterBottom>Trade Entry Form</Typography>
       {submitted && <Alert severity="success">Trade saved successfully!</Alert>}
       <form onSubmit={handleSubmit}>
-        <Grid container spacing={2}>
-          {fields.map((field, idx) => (
-            <Grid item xs={12} sm={6} key={idx}>
-              <TextField
-                fullWidth
-                name={field}
-                label={labelMap[field]}
-                type={field.toLowerCase().includes('date') ? 'date' : 'text'}
-                value={form[field]}
-                onChange={handleChange}
-                InputLabelProps={field.toLowerCase().includes('date') ? { shrink: true } : {}}
-                error={Boolean(errors[field])}
-                helperText={errors[field] || ''}
-              />
-            </Grid>
-          ))}
+        {Object.entries(fieldSections).map(([section, fields]) => (
+          <Paper elevation={1} sx={{ p: 2, mb: 2 }} key={section}>
+            <Typography variant="h6" gutterBottom>{section}</Typography>
+            <Grid container spacing={2}>
+              {fields.map((field, idx) => (
+                <Grid item xs={12} sm={6} md = {4} key={idx}>
+                  {dropdownOptions[field] ? (
+                    <TextField
+                      select
+                      fullWidth
+                      name={field}
+                      label={labelMap[field] || field}
+                      value={form[field]}
+                      onChange={handleChange}
+                      error={Boolean(errors[field])}
+                      helperText={errors[field] || ''}
+                      sx={{ minWidth: '100%' }} // ensure full container width
 
-          {form.profit && (
-            <Grid item xs={12} sm={6}>
-              <TextField
-                fullWidth
-                label="Profit"
-                value={form.profit}
-                InputProps={{ readOnly: true }}
-              />
+                    >
+                      {dropdownOptions[field].map((option, i) => (
+                        <MenuItem value={option} key={i}>{option}</MenuItem>
+                      ))}
+                    </TextField>
+                  ) : (
+                    <TextField
+                      fullWidth
+                      name={field}
+                      label={labelMap[field] || field}
+                      type={
+                        field.toLowerCase().includes('date')
+                          ? 'date'
+                          : ['quantity', 'buyPrice', 'sellPrice'].includes(field)
+                          ? 'number'
+                          : 'text'
+                      }
+                      value={form[field]}
+                      onChange={handleChange}
+                      InputLabelProps={field.toLowerCase().includes('date') ? { shrink: true } : {}}
+                      error={Boolean(errors[field])}
+                      helperText={errors[field] || ''}
+                    />
+                  )}
+                </Grid>
+              ))}
             </Grid>
-          )}
+          </Paper>
+        ))}
 
-          <Grid item xs={12}>
-            <Button type="submit" variant="contained" color="primary">Submit</Button>
-          </Grid>
-        </Grid>
+        {form.profit && (
+          <TextField
+            fullWidth
+            label="Profit"
+            value={form.profit}
+            InputProps={{ readOnly: true }}
+            sx={{ mb: 2 }}
+          />
+        )}
+
+        <Button type="submit" variant="contained" color="primary">
+          Submit Trade
+        </Button>
       </form>
     </Container>
   );

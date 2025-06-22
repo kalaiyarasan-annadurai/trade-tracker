@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 
 const Home = () => {
   return (
-    <Container sx={{ mt: 5 }}>
+    <Container sx={{ mt: 5 , backgroundColor: '#e9f5f0', py: 4}}>
       <Typography variant="h4" gutterBottom>
         Welcome to Trade Tracker 📈
       </Typography>
