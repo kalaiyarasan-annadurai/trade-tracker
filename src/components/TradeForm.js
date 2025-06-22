@@ -40,7 +40,7 @@ const TradeForm = () => {
     } else {
       setForm(prev => ({ ...prev, profit: '' }));
     }
-  }, [form.buyPrice, form.sellPrice, form.quantity]);
+  }, [form.buyPrice, form.sellPrice, form.quantity,setForm]);
 
   const handleChange = e => {
     const { name, value } = e.target;
