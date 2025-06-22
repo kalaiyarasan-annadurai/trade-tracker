@@ -48,7 +48,7 @@ const TradeForm = () => {
     setForm(prev => ({ ...prev, [name]: value }));
   };
 
-  const validate = () => {
+  const  validate = () => {
     const newErrors = {};
 
     // Required text
