@@ -40,7 +40,8 @@ const TradeForm = () => {
     } else {
       setForm(prev => ({ ...prev, profit: '' }));
     }
-  }, [form.buyPrice, form.sellPrice, form.quantity,setForm]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [form.buyPrice, form.sellPrice, form.quantity]);
 
   const handleChange = e => {
     const { name, value } = e.target;
