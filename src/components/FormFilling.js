@@ -6,7 +6,7 @@ const FormFilling = () => {
   return (
     <Container sx={{ mt: 5 }}>
       <Typography variant="h5" gutterBottom>
-        📋 Enter Trade Details
+        📋 Enter Trade Details 
       </Typography>
       <TradeForm />
     </Container>
